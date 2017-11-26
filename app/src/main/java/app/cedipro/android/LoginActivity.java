@@ -35,14 +35,18 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
                     Toast.makeText(LoginActivity.this, "El usuario inicio sesion", Toast.LENGTH_SHORT).show();
+                    goToMainActivity();
                 }else{
                     Toast.makeText(LoginActivity.this, "El usuario salio de la sesion", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         };
 
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
