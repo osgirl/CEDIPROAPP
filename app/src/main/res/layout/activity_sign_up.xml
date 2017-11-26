@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context="app.cedipro.android.SignUpActivity">
+
+    <EditText
+        android:id="@+id/SUusuario"
+        style="@style/EditText"
+        android:hint="@string/usuario"
+        android:inputType="textPersonName"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="67dp"
+        tools:layout_editor_absoluteY="166dp" />
+
+    <EditText
+        android:id="@+id/SUcontraseña"
+        style="@style/EditText"
+        android:layout_marginTop="16dp"
+        android:hint="@string/contrase_a"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@+id/SUusuario"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="67dp" />
+
+    <EditText
+        android:id="@+id/SUcodigo_verificacion"
+        style="@style/EditText"
+        android:layout_marginTop="16dp"
+        android:hint="@string/c_digo_de_verificaci_n"
+        android:inputType="textPersonName"
+        app:layout_constraintTop_toBottomOf="@+id/SUcontraseña"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="67dp" />
+
+    <Button
+        android:id="@+id/btnCrearCuenta"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/crear_cuenta"
+        android:onClick="crearCuenta"
+        app:layout_constraintTop_toBottomOf="@+id/SUcodigo_verificacion"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="67dp" />
+
+    <ImageView
+        android:id="@+id/imgCediproSU"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/cedipro"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="73dp"
+        tools:layout_editor_absoluteY="58dp" />
+
+</android.support.constraint.ConstraintLayout>
