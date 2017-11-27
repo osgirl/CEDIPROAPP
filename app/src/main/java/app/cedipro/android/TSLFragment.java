@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +18,24 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
+import app.cedipro.android.LoginActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 
 public class TSLFragment extends Fragment implements View.OnClickListener {
-    private EditText fechaEntrada, fechaDeseada, fechaReal;
+    final public static String FORMULARIO_REFERENCE= "formulariotsl";
+    final public static String REGISTROS_REFERENCE= "registros";
+    public EditText fechaEntrada, fechaDeseada, fechaReal, folio, marca, numEconomico, actMecanica,
+                    actElectrica, actPaileria;
     private Button btnEnviar, btnCancelar;
     private View view;
+    DatabaseReference databaseFormularioTSL;
     private int year, month, day;
     static final int  DIALOG_ID = 0;
     @Override
@@ -30,17 +43,19 @@ public class TSLFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_tsl, container, false);
+
         mostrarCalendario();
         return view;
     }
 
     public void mostrarCalendario(){
-        fechaEntrada =  (EditText) view.findViewById(R.id.fechaEntrada);
+        databaseFormularioTSL = FirebaseDatabase.getInstance().getReference(FORMULARIO_REFERENCE);
+        fechaEntrada = (EditText) view.findViewById(R.id.fechaEntrada);
         fechaEntrada.setKeyListener(null);
         //fechaEntrada.setOnTouchListener(this);
         fechaEntrada.setOnClickListener(this);
 
-        fechaDeseada =  (EditText) view.findViewById(R.id.fechaDeseada);
+        fechaDeseada = (EditText) view.findViewById(R.id.fechaDeseada);
         fechaDeseada.setKeyListener(null);
         fechaDeseada.setOnClickListener(this);
 
@@ -48,8 +63,20 @@ public class TSLFragment extends Fragment implements View.OnClickListener {
         fechaReal.setKeyListener(null);
         fechaReal.setOnClickListener(this);
 
+        folio = view.findViewById(R.id.folio_ot);
+        marca = view.findViewById(R.id.marca_unidad);
+        numEconomico = view.findViewById(R.id.num_economico);
+        actMecanica = view.findViewById(R.id.des_mecanica);
+        actElectrica = view.findViewById(R.id.des_electrica);
+        actPaileria = view.findViewById(R.id.des_paileria);
+
         btnEnviar = (Button) view.findViewById(R.id.btnEnviar);
-        btnEnviar.setOnClickListener(this);
+        btnEnviar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarFormulario();
+            }
+        });
         btnCancelar = (Button) view.findViewById(R.id.btnCancelar);
         btnCancelar.setOnClickListener(this);
     }
@@ -67,9 +94,11 @@ public class TSLFragment extends Fragment implements View.OnClickListener {
                 showDatePickerDialog(fechaReal);
                 break;
             case R.id.btnEnviar:
-                Toast.makeText(getContext(), "Registro enviado con éxito", Toast.LENGTH_SHORT).show();
+
+                //Toast.makeText(getContext(), "Formluario enviado con éxito", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnCancelar:
+                //Regresarlo a la actividad principal y/o borrar todos los campos
                 fechaEntrada.getText().clear();
                 fechaReal.getText().clear();
                 fechaDeseada.getText().clear();
@@ -83,6 +112,42 @@ public class TSLFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Registro cancelado", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void enviarFormulario() {
+        String fechaEnter = fechaEntrada.getText().toString().trim();
+        String folioOT = folio.getText().toString().trim();
+        String marcaUnidad = marca.getText().toString().trim();
+        String noEconomico = numEconomico.getText().toString().trim();
+        String desMecanica = actMecanica.getText().toString().trim();
+        String desElectrica = actElectrica.getText().toString().trim();
+        String desPaileria = actPaileria.getText().toString().trim();
+        String fechaWanted = fechaDeseada.getText().toString().trim();
+        String fechaRealtsl = fechaReal.getText().toString().trim();
+        /*
+        if (!TextUtils.isEmpty(fechaEnter)){
+
+        }*/
+
+        String id = databaseFormularioTSL.push().getKey();
+        FormularioTSL nuevoFormularioTSL = new FormularioTSL(fechaEnter, folioOT, marcaUnidad,
+                noEconomico, desMecanica, desElectrica, desPaileria, fechaWanted, fechaRealtsl);
+        databaseFormularioTSL.child(id).setValue(nuevoFormularioTSL, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Toast.makeText(view.getContext(), "Data could not be saved" + databaseError.getMessage()
+                            , Toast.LENGTH_SHORT).show();
+                    System.out.println("Data could not be saved " + databaseError.getMessage());
+                } else {
+                    Toast.makeText(view.getContext(), "Data saved successfully", Toast.LENGTH_SHORT).show();
+                    System.out.println("Data saved successfully.");
+                }
+            }
+        });
+        Log.i("BASE ",databaseFormularioTSL.getKey().toString());
+        Toast.makeText(getContext(), "Registro enviado ...", Toast.LENGTH_SHORT).show();
+
     }
 
     /*@Override
